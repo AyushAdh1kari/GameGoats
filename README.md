@@ -1,30 +1,25 @@
 # GameGoats
 
-Phase 1 setup baseline for CS 3200.
+Phase 1 + Phase 2 baseline for CS 3200.
 
 ## Project Overview
 
 GameGoats is a multi-persona platform for managing game-community activity and safety signals.
 
-Phase 1 focuses on team setup only:
+Current baseline includes:
 - clean template leftovers,
-- lock route/resource scope in a REST matrix,
 - define branching workflow,
 - confirm Docker startup for API, database, and Streamlit.
+- database schema aligned to personas/ER relationships (`users`, `roles`, `developer_profiles`, `studios`, `games`, `tags`, `comments`, `forum_threads`, `follows`, `favorites`, `recommendations`, `reports`, `servers`, `alerts`)
+- synthetic seed data to support persona demos.
 
-No schema build or full feature implementation is included yet.
+API/business logic and full frontend feature implementation are still in progress.
 
 ## Repository Structure
 
 - `app/`: Streamlit frontend
 - `api/`: Flask API
 - `database-files/`: SQL files executed when MySQL container is created
-- `docs/`: project planning artifacts (REST matrix, branching rules)
-
-## Phase 1 Docs
-
-- REST API matrix: `docs/rest-api-matrix.md`
-- Branching strategy: `docs/branching-strategy.md`
 
 ## Prerequisites
 
@@ -104,7 +99,12 @@ docker compose down db -v
 docker compose up db -d
 ```
 
-## Branch Workflow
+Seed/schema details and expected row counts are documented in:
+- `database-files/README.md`
 
+Role note:
+- this schema uses `player`, `recommender`, `developer`, and `admin` roles.
+
+## Branch Workflow
 - Work on your own branch.
 - Open PRs into `main`; do not push directly to `main`.
