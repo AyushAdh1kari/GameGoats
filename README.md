@@ -104,7 +104,6 @@ Seed/schema details and expected row counts are documented in:
 
 Role note:
 - this schema uses `player`, `recommender`, `developer`, and `admin` roles.
-- there is no separate moderator role in the current model.
 
 ## Branch Workflow
 - Work on your own branch.
