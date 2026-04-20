@@ -10,7 +10,7 @@ Current baseline includes:
 - clean template leftovers,
 - define branching workflow,
 - confirm Docker startup for API, database, and Streamlit.
-- database schema for core resources (`games`, `comments`, `favorites`, `recommendations`, `reports`, `servers`, `alerts`)
+- database schema aligned to personas/ER relationships (`users`, `roles`, `developer_profiles`, `studios`, `games`, `tags`, `comments`, `forum_threads`, `follows`, `favorites`, `recommendations`, `reports`, `servers`, `alerts`)
 - synthetic seed data to support persona demos.
 
 API/business logic and full frontend feature implementation are still in progress.
@@ -100,10 +100,12 @@ docker compose up db -d
 ```
 
 Seed/schema details and expected row counts are documented in:
-
 - `database-files/README.md`
 
-## Branch Workflow
+Role note:
+- this schema uses `player`, `recommender`, `developer`, and `admin` roles.
+- there is no separate moderator role in the current model.
 
+## Branch Workflow
 - Work on your own branch.
 - Open PRs into `main`; do not push directly to `main`.
