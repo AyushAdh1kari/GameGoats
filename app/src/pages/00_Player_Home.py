@@ -2,59 +2,41 @@ import requests
 import streamlit as st
 
 from modules.nav import SideBarLinks
+from modules.personas import require_persona
 
 st.set_page_config(layout="wide", page_title="Player Home", page_icon="🎮")
 SideBarLinks()
+user = require_persona("player")
 
-if not st.session_state.get("authenticated") or st.session_state.get("role") != "player":
-    st.warning("Please log in as a Player from the Home page.")
-    st.stop()
-
-API = "http://web-api:4000"
-user_id = st.session_state["user_id"]
-username = st.session_state["username"]
-
-st.title(f"Welcome, {username}!")
-st.markdown("Your player dashboard — browse games, check your profile, and explore the community.")
+st.title("Julia Player Home")
+st.write(f"Welcome back, {user['display_name']}. Use this player workspace to explore the live game catalog and file safety reports.")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    try:
-        resp = requests.get(f"{API}/users/{user_id}/favorites", timeout=5)
-        fav_count = len(resp.json()) if resp.status_code == 200 else 0
-    except Exception:
-        fav_count = "–"
-    st.metric("Favorites", fav_count)
+    st.subheader("Browse Games")
+    st.caption("Search the current catalog and scan genres, platforms, and lifecycle state.")
+    if st.button("Open Game Browser", type="primary", use_container_width=True):
+        st.switch_page("pages/01_Player_Browse_Games.py")
 
 with col2:
-    try:
-        resp = requests.get(f"{API}/users/{user_id}/comments", timeout=5)
-        review_count = len(resp.json()) if resp.status_code == 200 else 0
-    except Exception:
-        review_count = "–"
-    st.metric("Reviews Written", review_count)
+    st.subheader("Inspect A Game")
+    st.caption("Pull a single title by id and read its full details before deciding what to play.")
+    if st.button("Open Game Details", type="primary", use_container_width=True):
+        st.switch_page("pages/02_Player_Game_Details.py")
 
 with col3:
-    try:
-        resp = requests.get(f"{API}/users/{user_id}/follows", timeout=5)
-        follow_count = len(resp.json()) if resp.status_code == 200 else 0
-    except Exception:
-        follow_count = "–"
-    st.metric("Following", follow_count)
+    st.subheader("Submit Report")
+    st.caption("Escalate a suspicious game, player, comment, or thread through the live report API.")
+    if st.button("Open Report Form", type="primary", use_container_width=True):
+        st.switch_page("pages/03_Player_Submit_Report.py")
 
 st.divider()
-
-col_a, col_b, col_c = st.columns(3)
-
-with col_a:
-    if st.button("Search Games", type="primary", use_container_width=True):
-        st.switch_page("pages/01_Game_Search.py")
-
-with col_b:
-    if st.button("Game Detail", use_container_width=True):
-        st.switch_page("pages/02_Game_Detail.py")
-
-with col_c:
-    if st.button("My Profile", use_container_width=True):
-        st.switch_page("pages/03_My_Profile.py")
+st.markdown(
+    """
+    ### Player demo flow
+    1. Browse the live `GET /games` catalog.
+    2. Inspect a specific title with `GET /games/<game_id>`.
+    3. Submit a moderation issue with `POST /reports`.
+    """
+)
