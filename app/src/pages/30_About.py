@@ -8,34 +8,13 @@ SideBarLinks()
 st.write("# About GameGoats")
 st.markdown(
     """
-    GameGoats is a multi-persona platform for browsing games, publishing titles,
-    monitoring safety signals, and managing live operations.
+    GameGoats is a team project for managing game-community signals and safety operations.
 
-    ### Where the project is now
-
-    The frontend has moved beyond the original setup-only pages and now focuses on
-    persona-driven demo flows. The Streamlit app currently supports four active personas:
-    player, developer, recommender, and admin.
-
-    ### What is working in this branch
-
-    - mock login from the landing page using seeded demo users
-    - player pages for browsing the game catalog, inspecting game details, and filing reports
-    - developer pages for creating, editing, and deleting games
-    - admin pages for reviewing servers, managing alerts, and processing reports
-    - recommender pages for tracking the catalog and submitting safety escalations
-    - container/API/database health checks from the Streamlit app
-
-    ### Current backend coverage
-
-    Live Flask routes in use here include:
-    - system health routes
-    - full CRUD for `games`
-    - admin routes for `reports`, `servers`, and `alerts`
-
-    The remaining `users/recommendations` and `studio_developer/community` backend areas
-    are still being wired up, so this app branch is intentionally centered on the APIs
-    that are already live and testable.
+    In Phase 1, this repository focuses on:
+    - consistent local startup with Docker,
+    - shared branch workflow,
+    - locked REST route/resource scope,
+    - cleaned template baseline for future implementation.
     """
 )
 
