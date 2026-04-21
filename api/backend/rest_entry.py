@@ -6,7 +6,10 @@ from flask import Flask
 
 from backend.db_connection import init_app as init_db
 from backend.admin.admin_routes import admin_routes
+from backend.games.games_routes import games_routes
+from backend.studio_developer.studio_developer_routes import studio_developer_routes
 from backend.system.system_routes import system_routes
+from backend.users.users_routes import users_routes
 
 
 def create_app():
@@ -31,5 +34,8 @@ def create_app():
     app.logger.info("create_app(): registering blueprints")
     app.register_blueprint(system_routes)
     app.register_blueprint(admin_routes)
+    app.register_blueprint(games_routes)
+    app.register_blueprint(users_routes)
+    app.register_blueprint(studio_developer_routes)
 
     return app
