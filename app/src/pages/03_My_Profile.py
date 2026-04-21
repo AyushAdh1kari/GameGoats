@@ -68,8 +68,7 @@ if favorites:
                              use_container_width=True):
                     try:
                         del_resp = requests.delete(
-                            f"{API}/users/{user_id}/favorites",
-                            json={"game_id": f["game_id"]},
+                            f"{API}/users/{user_id}/favorites/{f['game_id']}",
                             timeout=5,
                         )
                         if del_resp.status_code == 200:

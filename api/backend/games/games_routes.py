@@ -60,8 +60,14 @@ def create_game():
                 data.get("published_by_studio_id"),
             ),
         )
+        new_game_id = cursor.lastrowid
+        if data.get("developer_id"):
+            cursor.execute(
+                "INSERT INTO game_developers (game_id, developer_id, contribution_role) VALUES (%s, %s, %s)",
+                (new_game_id, data["developer_id"], data.get("contribution_role", "Lead")),
+            )
         db.commit()
-        return jsonify({"game_id": cursor.lastrowid}), 201
+        return jsonify({"game_id": new_game_id}), 201
     except Error as exc:
         db.rollback()
         return jsonify({"error": str(exc)}), 400
@@ -334,6 +340,27 @@ def get_forum_thread(thread_id):
 		return jsonify(thread), 200
 	except Exception as e:
 		return jsonify({"error": str(e)}), 500
+	finally:
+		cursor.close()
+
+
+@games_routes.route("/forum-threads/<int:thread_id>", methods=["POST"])
+def add_forum_contribution(thread_id):
+	data = request.get_json(silent=True) or {}
+	if "contributed_by_user_id" not in data or "contribution_text" not in data:
+		return jsonify({"error": "Missing contributed_by_user_id or contribution_text"}), 400
+	db = get_db()
+	cursor = db.cursor()
+	try:
+		cursor.execute(
+			"INSERT INTO forum_thread_contributions (forum_id, contributed_by_user_id, contribution_text) VALUES (%s, %s, %s)",
+			(thread_id, data["contributed_by_user_id"], data["contribution_text"]),
+		)
+		db.commit()
+		return jsonify({"message": "Reply posted", "contribution_id": cursor.lastrowid}), 201
+	except Exception as e:
+		db.rollback()
+		return jsonify({"error": str(e)}), 400
 	finally:
 		cursor.close()
 

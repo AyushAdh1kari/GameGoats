@@ -79,6 +79,7 @@ with st.form("publish_game_form", clear_on_submit=True):
                     "platform": platform,
                     "release_year": release_year,
                     "published_by_studio_id": studio_id,
+                    "developer_id": user_id,
                 },
                 timeout=5,
             )

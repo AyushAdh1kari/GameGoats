@@ -77,8 +77,8 @@ with col_accept:
     if st.button("Accept", type="primary", use_container_width=True):
         try:
             requests.put(
-                f"{API}/users/{user_id}/recommendations",
-                json={"recommendation_id": rec["recommendation_id"], "recommendation_status": "accepted"},
+                f"{API}/users/{user_id}/recommendations/{rec['recommendation_id']}",
+                json={"recommendation_status": "accepted"},
                 timeout=5,
             )
             st.success("Accepted!")
@@ -91,8 +91,8 @@ with col_dismiss:
     if st.button("Dismiss", use_container_width=True):
         try:
             requests.put(
-                f"{API}/users/{user_id}/recommendations",
-                json={"recommendation_id": rec["recommendation_id"], "recommendation_status": "dismissed"},
+                f"{API}/users/{user_id}/recommendations/{rec['recommendation_id']}",
+                json={"recommendation_status": "dismissed"},
                 timeout=5,
             )
             st.info("Dismissed.")
@@ -105,8 +105,8 @@ with col_save:
     if st.button("Save for Later", use_container_width=True):
         try:
             requests.put(
-                f"{API}/users/{user_id}/recommendations",
-                json={"recommendation_id": rec["recommendation_id"], "is_saved": True},
+                f"{API}/users/{user_id}/recommendations/{rec['recommendation_id']}",
+                json={"is_saved": True},
                 timeout=5,
             )
             st.success("Saved!")
