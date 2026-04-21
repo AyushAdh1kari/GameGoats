@@ -1439,3 +1439,67 @@ INSERT INTO reports (created_by_user_id, offender_user_id, offender_type, offend
   (31, NULL, 'other', NULL, 'Inappropriate content in user-generated level.', 'open', NULL, '2026-01-14 12:00:00', NULL, NULL),
   (22, NULL, 'comment', 47, 'Team-killing repeatedly in competitive mode.', 'in_review', 37, '2025-12-21 12:00:00', NULL, NULL),
   (23, 28, 'user', 8, 'Team-killing repeatedly in competitive mode.', 'rejected', 36, '2026-02-01 12:00:00', '2026-02-11 12:00:00', 'Content removed, no further action needed.');
+
+-- ── gap-fill: ensure every game has at least 2 comments ──
+INSERT INTO comments (game_id, created_by_user_id, comment_text, rating, created_at, updated_at) VALUES
+  (1, 3, 'Solid controls and a surprisingly deep crafting system.', 4, '2026-03-10 12:00:00', '2026-03-10 13:00:00'),
+  (1, 12, 'Great visuals but wish there were more maps.', 3, '2026-03-14 12:00:00', '2026-03-14 14:00:00'),
+  (4, 5, 'Incredible atmosphere, the soundtrack is amazing.', 5, '2026-03-08 12:00:00', '2026-03-08 13:00:00'),
+  (4, 18, 'Needs more endgame content but still worth playing.', 3, '2026-03-12 12:00:00', '2026-03-12 14:00:00'),
+  (14, 10, 'Fun co-op mode, my friends and I had a blast.', 4, '2026-03-06 12:00:00', '2026-03-06 13:00:00'),
+  (14, 22, 'Runs surprisingly well on lower-end hardware.', 4, '2026-03-15 12:00:00', '2026-03-15 14:00:00'),
+  (17, 9, 'Love the art style, very unique look.', 5, '2026-03-02 12:00:00', '2026-03-02 13:00:00'),
+  (17, 30, 'Matchmaking could use some work but gameplay is solid.', 3, '2026-03-11 12:00:00', '2026-03-11 14:00:00'),
+  (18, 15, 'Story mode is surprisingly emotional.', 5, '2026-03-05 12:00:00', '2026-03-05 13:00:00'),
+  (18, 25, 'Great tutorial system for new players.', 4, '2026-03-18 12:00:00', '2026-03-18 14:00:00'),
+  (25, 2, 'Competitive scene is really heating up.', 4, '2026-03-09 12:00:00', '2026-03-09 13:00:00'),
+  (25, 33, 'Patch 2.1 fixed most of the balancing issues.', 4, '2026-03-20 12:00:00', '2026-03-20 14:00:00'),
+  (27, 11, 'Best exploration game I have played this year.', 5, '2026-03-03 12:00:00', '2026-03-03 13:00:00'),
+  (27, 19, 'The procedural generation keeps every run fresh.', 4, '2026-03-16 12:00:00', '2026-03-16 14:00:00'),
+  (30, 6, 'Smooth 60fps on console, very well optimized.', 4, '2026-03-07 12:00:00', '2026-03-07 13:00:00'),
+  (30, 38, 'DLC added a ton of content, well worth it.', 5, '2026-03-22 12:00:00', '2026-03-22 14:00:00');
+
+-- ── gap-fill: ensure every game has at least 1 forum thread ──
+INSERT INTO forum_threads (game_id, title, thread_text, created_by_user_id, created_at, updated_at) VALUES
+  (1, 'Best starting build?', 'What build do you all recommend for a first playthrough?', 3, '2026-03-10 12:00:00', '2026-03-10 12:00:00'),
+  (5, 'Hidden easter eggs', 'Found a secret room in the third level. Anyone else find hidden stuff?', 14, '2026-03-11 12:00:00', '2026-03-11 12:00:00'),
+  (13, 'Favorite map?', 'Which map do you enjoy playing the most and why?', 8, '2026-03-12 12:00:00', '2026-03-12 12:00:00'),
+  (14, 'Co-op tips', 'Any tips for co-op mode? We keep wiping on the last boss.', 22, '2026-03-06 12:00:00', '2026-03-06 12:00:00'),
+  (15, 'Graphics settings guide', 'Here is how to get the best visuals without tanking your FPS.', 17, '2026-03-13 12:00:00', '2026-03-13 12:00:00'),
+  (22, 'Season 3 tier list', 'What does everyone think of the new meta after the balance patch?', 25, '2026-03-14 12:00:00', '2026-03-14 12:00:00'),
+  (25, 'Ranked mode discussion', 'How are you all finding the new ranking system?', 33, '2026-03-09 12:00:00', '2026-03-09 12:00:00'),
+  (34, 'Lore discussion', 'The hidden lore in this game is incredible. What have you pieced together?', 11, '2026-03-15 12:00:00', '2026-03-15 12:00:00'),
+  (35, 'Performance on Mac', 'Anyone running this on a Mac? What settings are you using?', 19, '2026-03-16 12:00:00', '2026-03-16 12:00:00');
+
+-- ── gap-fill: ensure every game has at least 1 tag ──
+INSERT INTO game_tags (game_id, tag_id) VALUES
+  (13, 3),
+  (35, 7);
+
+-- ── gap-fill: ensure users with no comments get at least 1 ──
+INSERT INTO comments (game_id, created_by_user_id, comment_text, rating, created_at, updated_at) VALUES
+  (2, 1, 'Just started playing, first impressions are great.', 4, '2026-03-19 12:00:00', '2026-03-19 13:00:00'),
+  (5, 4, 'The level design in this game is top notch.', 5, '2026-03-20 12:00:00', '2026-03-20 13:00:00'),
+  (10, 7, 'Runs well on my setup, no crashes so far.', 4, '2026-03-21 12:00:00', '2026-03-21 13:00:00'),
+  (15, 8, 'Interesting premise, looking forward to updates.', 3, '2026-03-22 12:00:00', '2026-03-22 13:00:00'),
+  (20, 14, 'The community around this game is really helpful.', 4, '2026-03-23 12:00:00', '2026-03-23 13:00:00'),
+  (25, 16, 'PvP balance feels much better after the last patch.', 4, '2026-03-24 12:00:00', '2026-03-24 13:00:00'),
+  (30, 21, 'Really enjoyable single-player campaign.', 5, '2026-03-25 12:00:00', '2026-03-25 13:00:00'),
+  (35, 28, 'Good game but could use more quality-of-life features.', 3, '2026-03-26 12:00:00', '2026-03-26 13:00:00'),
+  (40, 36, 'Soundtrack alone makes this worth trying.', 4, '2026-03-27 12:00:00', '2026-03-27 13:00:00');
+
+-- ── gap-fill: ensure user 17 has at least 1 favorite ──
+INSERT INTO favorites (player_user_id, game_id, priority) VALUES
+  (17, 12, 2);
+
+-- ── gap-fill: ensure every user has at least 1 recommendation ──
+INSERT INTO recommendations (player_user_id, game_id, recommendation_reason, match_score, is_saved, recommendation_status, generated_at) VALUES
+  (5, 18, 'Matches your preference for story-driven adventures.', 82.50, FALSE, 'new', '2026-03-10 12:00:00'),
+  (14, 7, 'Similar gameplay loop to titles you have rated highly.', 78.00, FALSE, 'new', '2026-03-11 12:00:00'),
+  (19, 22, 'Top-rated in your favorite genre.', 85.00, TRUE, 'accepted', '2026-03-12 12:00:00'),
+  (27, 3, 'Players with similar taste loved this one.', 79.50, FALSE, 'new', '2026-03-13 12:00:00'),
+  (28, 11, 'Highly rated by players in your region.', 88.00, FALSE, 'new', '2026-03-14 12:00:00'),
+  (30, 33, 'New release that fits your play style.', 76.00, FALSE, 'new', '2026-03-15 12:00:00'),
+  (33, 9, 'Based on your recent activity and reviews.', 81.00, TRUE, 'accepted', '2026-03-16 12:00:00'),
+  (34, 16, 'Trending title in a genre you enjoy.', 77.50, FALSE, 'new', '2026-03-17 12:00:00'),
+  (36, 28, 'Recommended by users you follow.', 83.00, FALSE, 'new', '2026-03-18 12:00:00');
