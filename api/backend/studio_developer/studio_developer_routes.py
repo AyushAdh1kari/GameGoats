@@ -3,6 +3,45 @@ from backend.db_connection import get_db
 
 studio_developer_routes = Blueprint("studio_developer_routes", __name__)
 
+
+@studio_developer_routes.route("/developers/<int:developer_id>/games", methods=["GET"])
+def get_developer_games(developer_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT g.*
+               FROM games g
+               JOIN game_developers gd ON g.game_id = gd.game_id
+               WHERE gd.developer_id = %s
+               ORDER BY g.title""",
+            (developer_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
+@studio_developer_routes.route("/developers/<int:developer_id>/studios", methods=["GET"])
+def get_developer_studios(developer_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT s.*, sm.is_owner, sm.joined_on
+               FROM studios s
+               JOIN studio_memberships sm ON s.studio_id = sm.studio_id
+               WHERE sm.developer_id = %s
+               ORDER BY s.studio_name""",
+            (developer_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
 # /studios/<id>
 
 @studio_developer_routes.route("/studios/<int:studio_id>", methods=["GET"])

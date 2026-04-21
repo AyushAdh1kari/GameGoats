@@ -12,6 +12,13 @@ def _request_data():
 def _missing_fields(data, required_fields):
     return [field for field in required_fields if field not in data]
 
+@games_routes.route("/tags", methods=["GET"])
+def get_all_tags():
+	cursor = get_db().cursor(dictionary=True)
+	cursor.execute("SELECT * FROM tags ORDER BY tag_name")
+	return jsonify(cursor.fetchall()), 200
+
+
 @games_routes.route("/games", methods=["GET"])
 def get_all_games():
 	cursor = get_db().cursor(dictionary = True)
@@ -61,13 +68,14 @@ def create_game():
     finally:
         cursor.close()
 
-@games_routes.route("/games/<id>", methods=["GET"])
-def get_game(id):
-	cursor = get_db().cursor(dictionary = True)
-	cursor.execute('SELECT * FROM games WHERE game_id = {0}'.format(id))
-	the_data = cursor.fetchall()
-	the_response = make_response(the_data)
-	return the_response
+@games_routes.route("/games/<int:game_id>", methods=["GET"])
+def get_game(game_id):
+	cursor = get_db().cursor(dictionary=True)
+	cursor.execute("SELECT * FROM games WHERE game_id = %s", (game_id,))
+	the_data = cursor.fetchone()
+	if not the_data:
+		return jsonify({"error": "Game not found"}), 404
+	return jsonify(the_data), 200
 
 @games_routes.route("/games/<int:game_id>", methods=["PUT"])
 def update_game(game_id):
@@ -99,7 +107,7 @@ def update_game(game_id):
 
         values.append(game_id)
         cursor.execute(
-            """UPDATE games SET {', '.join(fields)} WHERE game_id = %s""",
+            f"UPDATE games SET {', '.join(fields)} WHERE game_id = %s",
             values,
         )
         db.commit()
@@ -112,12 +120,12 @@ def update_game(game_id):
     finally:
         cursor.close()
 
-@games_routes.route("/games/<id>", methods=["DELETE"])
-def delete_game(id):
+@games_routes.route("/games/<int:game_id>", methods=["DELETE"])
+def delete_game(game_id):
     db = get_db()
     cursor = db.cursor()
     try:
-        cursor.execute("DELETE FROM games WHERE = {0}".format(id))
+        cursor.execute("DELETE FROM games WHERE game_id = %s", (game_id,))
         db.commit()
         if cursor.rowcount == 0:
             return jsonify({"error": "Game not found"}), 404
@@ -133,25 +141,18 @@ def get_tags_by_game(id):
 	the_response = make_response(the_data)
 	return the_response
 
-@games_routes.route("/games/<id>/tags", methods=["POST"])
-def add_tag_to_game(id):
+@games_routes.route("/games/<int:game_id>/tags", methods=["POST"])
+def add_tag_to_game(game_id):
     data = _request_data()
-    required_fields = ("tag_id")
-    missing_fields = _missing_fields(data, required_fields)
-    if missing_fields:
-        return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+    if "tag_id" not in data:
+        return jsonify({"error": "Missing required field: tag_id"}), 400
 
     db = get_db()
     cursor = db.cursor()
     try:
         cursor.execute(
-            """INSERT INTO game_tags
-               (game_id, tag_id)
-               VALUES (%s, %s)""",
-            (
-                data[id],
-                data["tag_id"]
-            ),
+            "INSERT INTO game_tags (game_id, tag_id) VALUES (%s, %s)",
+            (game_id, data["tag_id"]),
         )
         db.commit()
         return jsonify({"message": "Tag added"}), 200
@@ -186,18 +187,16 @@ def delete_tag_from_game(game_id):
         cursor.close()
          
 
-@games_routes.route("/games/<id>/comments", methods=["GET"])
-def get_comments_from_game(id):
-	cursor = get_db().cursor(dictionary = True)
-	cursor.execute('SELECT * FROM comments WHERE game_id = {0})'.format(id))
-	the_data = cursor.fetchall()
-	the_response = make_response(the_data)
-	return the_response
+@games_routes.route("/games/<int:game_id>/comments", methods=["GET"])
+def get_comments_from_game(game_id):
+	cursor = get_db().cursor(dictionary=True)
+	cursor.execute("SELECT c.*, u.username FROM comments c JOIN users u ON c.created_by_user_id = u.user_id WHERE c.game_id = %s ORDER BY c.created_at DESC", (game_id,))
+	return jsonify(cursor.fetchall()), 200
 
-@games_routes.route("/games/<id>/comments", methods=["POST"])
-def add_comment_to_game(id):
+@games_routes.route("/games/<int:game_id>/comments", methods=["POST"])
+def add_comment_to_game(game_id):
     data = _request_data()
-    required_fields = ("created_by_user_id", "comment_text", "rating")
+    required_fields = ["created_by_user_id", "comment_text", "rating"]
     missing_fields = _missing_fields(data, required_fields)
     if missing_fields:
         return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
@@ -208,45 +207,43 @@ def add_comment_to_game(id):
         cursor.execute(
             """INSERT INTO comments
                (game_id, created_by_user_id, comment_text, rating)
-               VALUES (%s, %s, %s, %s)""", 
-            (
-                data[id],
-                data["created_by_user_id"],
-                data["comment_text"],
-                data["rating"]
-            ),
+               VALUES (%s, %s, %s, %s)""",
+            (game_id, data["created_by_user_id"], data["comment_text"], data["rating"]),
         )
         db.commit()
-        return jsonify({"message": "Tag added"}), 200
+        return jsonify({"message": "Comment added", "comment_id": cursor.lastrowid}), 201
     except Error as exc:
         db.rollback()
         return jsonify({"error": str(exc)}), 400
     finally:
         cursor.close()
 
-@games_routes.route("/games/<id>/comments", methods=["DELETE"])
-def delete_all_comments_from_game(id):
-	cursor = get_db().cursor
-	cursor.execute('DELETE FROM comments WHERE game_id = {0})'.format(id))
-	the_response = jsonify({"message": "All Comments deleted from Game"}), 200
-	return the_response
+@games_routes.route("/games/<int:game_id>/comments", methods=["DELETE"])
+def delete_all_comments_from_game(game_id):
+	db = get_db()
+	cursor = db.cursor()
+	cursor.execute("DELETE FROM comments WHERE game_id = %s", (game_id,))
+	db.commit()
+	return jsonify({"message": "All comments deleted from game"}), 200
 
 # TODO: Should we change the comments tables to a weak entity?
-@games_routes.route("/comments/<id>", methods=["GET"])
-def get_comment(id):
-	cursor = get_db().cursor(dictionary = True)
-	cursor.execute('SELECT * FROM comments WHERE comment_id = {0})'.format(id))
-	the_data = cursor.fetchall()
-	the_response = make_response(the_data)
-	return the_response 
+@games_routes.route("/comments/<int:comment_id>", methods=["GET"])
+def get_comment(comment_id):
+	cursor = get_db().cursor(dictionary=True)
+	cursor.execute("SELECT * FROM comments WHERE comment_id = %s", (comment_id,))
+	the_data = cursor.fetchone()
+	if not the_data:
+		return jsonify({"error": "Comment not found"}), 404
+	return jsonify(the_data), 200
 
-@games_routes.route("/comments/<id>/rating", methods=["GET"])
-def get_comment_rating(id):
-	cursor = get_db().cursor(dictionary = True)
-	cursor.execute('SELECT rating FROM comments WHERE comment_id = {0})'.format(id))
-	the_data = cursor.fetchall()
-	the_response = make_response(the_data)
-	return the_response 
+@games_routes.route("/comments/<int:comment_id>/rating", methods=["GET"])
+def get_comment_rating(comment_id):
+	cursor = get_db().cursor(dictionary=True)
+	cursor.execute("SELECT rating FROM comments WHERE comment_id = %s", (comment_id,))
+	the_data = cursor.fetchone()
+	if not the_data:
+		return jsonify({"error": "Comment not found"}), 404
+	return jsonify(the_data), 200
 
 @games_routes.route("/comments/<id>", methods=["PUT"])
 def update_comment(id):
@@ -269,7 +266,7 @@ def update_comment(id):
          if not fields: return jsonify({"error": "No fields to update"}), 400
          values.append(id)
          cursor.execute(
-            """UPDATE comments SET {', '.join(fields)} WHERE comment_id = %s""",
+            f"UPDATE comments SET {', '.join(fields)} WHERE comment_id = %s",
             values,
         )
          db.commit()
@@ -281,14 +278,83 @@ def update_comment(id):
         cursor.close()
     
 
-@games_routes.route("/comments/<id>", methods=["DELETE"])
-def delete_comment(id):
-	cursor = get_db().cursor
-	cursor.execute('DELETE FROM comments WHERE comment_id = {0})'.format(id))
-	the_response = jsonify({"message": "Comment deleted"}), 200
-	return the_response 
+@games_routes.route("/comments/<int:comment_id>", methods=["DELETE"])
+def delete_comment(comment_id):
+	db = get_db()
+	cursor = db.cursor()
+	cursor.execute("DELETE FROM comments WHERE comment_id = %s", (comment_id,))
+	db.commit()
+	if cursor.rowcount == 0:
+		return jsonify({"error": "Comment not found"}), 404
+	return jsonify({"message": "Comment deleted"}), 200
 
 
+@games_routes.route("/games/<int:game_id>/forum-threads", methods=["GET"])
+def get_game_forum_threads(game_id):
+	cursor = get_db().cursor(dictionary=True)
+	try:
+		cursor.execute(
+			"""SELECT ft.*, u.username AS author
+			   FROM forum_threads ft
+			   JOIN users u ON ft.created_by_user_id = u.user_id
+			   WHERE ft.game_id = %s
+			   ORDER BY ft.created_at DESC""",
+			(game_id,),
+		)
+		return jsonify(cursor.fetchall()), 200
+	except Exception as e:
+		return jsonify({"error": str(e)}), 500
+	finally:
+		cursor.close()
 
 
+@games_routes.route("/forum-threads/<int:thread_id>", methods=["GET"])
+def get_forum_thread(thread_id):
+	cursor = get_db().cursor(dictionary=True)
+	try:
+		cursor.execute(
+			"""SELECT ft.*, u.username AS author
+			   FROM forum_threads ft
+			   JOIN users u ON ft.created_by_user_id = u.user_id
+			   WHERE ft.forum_id = %s""",
+			(thread_id,),
+		)
+		thread = cursor.fetchone()
+		if not thread:
+			return jsonify({"error": "Thread not found"}), 404
+		cursor.execute(
+			"""SELECT ftc.*, u.username AS contributor
+			   FROM forum_thread_contributions ftc
+			   JOIN users u ON ftc.contributed_by_user_id = u.user_id
+			   WHERE ftc.forum_id = %s
+			   ORDER BY ftc.created_at""",
+			(thread_id,),
+		)
+		thread["contributions"] = cursor.fetchall()
+		return jsonify(thread), 200
+	except Exception as e:
+		return jsonify({"error": str(e)}), 500
+	finally:
+		cursor.close()
+
+
+@games_routes.route("/games/<int:game_id>/ratings/trends", methods=["GET"])
+def get_game_rating_trends(game_id):
+	cursor = get_db().cursor(dictionary=True)
+	try:
+		cursor.execute(
+			"""SELECT DATE(created_at) AS date,
+			          ROUND(AVG(rating), 2) AS avg_rating,
+			          COUNT(*) AS review_count
+			   FROM comments
+			   WHERE game_id = %s
+			   GROUP BY DATE(created_at)
+			   ORDER BY date""",
+			(game_id,),
+		)
+		return jsonify(cursor.fetchall()), 200
+	except Exception as e:
+		return jsonify({"error": str(e)}), 500
+	finally:
+		cursor.close()
 

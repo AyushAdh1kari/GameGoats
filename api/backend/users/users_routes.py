@@ -3,6 +3,25 @@ from backend.db_connection import get_db
 
 users_routes = Blueprint("users_routes", __name__)
 
+
+@users_routes.route("/users/<int:user_id>", methods=["GET"])
+def get_user(user_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT user_id, username, email, region, created_at FROM users WHERE user_id = %s",
+            (user_id,),
+        )
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify(user), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
 # get all fav from user
 @users_routes.route("/users/<int:user_id>/favorites", methods=["GET"])
 def get_user_favorites(user_id):
@@ -91,6 +110,44 @@ def delete_user_favorite(user_id, game_id):
 
     finally:
         cursor.close()
+
+@users_routes.route("/users/<int:user_id>/comments", methods=["GET"])
+def get_user_comments(user_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT c.*, g.title AS game_title
+               FROM comments c
+               JOIN games g ON c.game_id = g.game_id
+               WHERE c.created_by_user_id = %s
+               ORDER BY c.created_at DESC""",
+            (user_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
+
+@users_routes.route("/users/<int:user_id>/follows", methods=["GET"])
+def get_user_follows(user_id):
+    cursor = get_db().cursor(dictionary=True)
+    try:
+        cursor.execute(
+            """SELECT uf.followed_user_id, u.username, uf.followed_at
+               FROM user_follows uf
+               JOIN users u ON uf.followed_user_id = u.user_id
+               WHERE uf.follower_user_id = %s
+               ORDER BY uf.followed_at DESC""",
+            (user_id,),
+        )
+        return jsonify(cursor.fetchall()), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cursor.close()
+
 
 # get rec
 @users_routes.route("/users/<int:user_id>/recommendations", methods=["GET"])
