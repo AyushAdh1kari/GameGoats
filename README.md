@@ -108,3 +108,6 @@ Role note:
 ## Branch Workflow
 - Work on your own branch.
 - Open PRs into `main`; do not push directly to `main`.
+
+## Project Submission Demo
+https://northeastern-my.sharepoint.com/:v:/g/personal/riley_ju_northeastern_edu/IQDoW5EFc6WyR5Eg8lBwnHQtAXDghmIbXUfZDfbcKZvREf8?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=A6LfOE
