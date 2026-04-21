@@ -30,6 +30,6 @@ def create_app():
 
     app.logger.info("create_app(): registering blueprints")
     app.register_blueprint(system_routes)
-    app.register_blueprint(games_routes, url_prefix='/g')
+    app.register_blueprint(games_routes)
 
     return app
