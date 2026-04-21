@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from backend.db_connection import init_app as init_db
+from backend.admin.admin_routes import admin_routes
+from backend.games.games_routes import games_routes
 from backend.system.system_routes import system_routes
 from backend.games.games_routes import games_routes
 
@@ -31,5 +33,6 @@ def create_app():
     app.logger.info("create_app(): registering blueprints")
     app.register_blueprint(system_routes)
     app.register_blueprint(games_routes)
+    app.register_blueprint(admin_routes)
 
     return app
