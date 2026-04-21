@@ -1,9 +1,10 @@
+import requests
 import streamlit as st
 
 from modules.nav import SideBarLinks
 from modules.personas import require_persona
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Player Home", page_icon="🎮")
 SideBarLinks()
 user = require_persona("player")
 

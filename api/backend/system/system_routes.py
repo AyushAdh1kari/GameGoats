@@ -4,9 +4,6 @@ from backend.db_connection import get_db
 
 system_routes = Blueprint("system_routes", __name__)
 
-
-# cursor = get_db().cursor(dictionary = TRUE)
-
 @system_routes.route("/", methods=["GET"])
 def welcome():
     current_app.logger.info("GET /")
