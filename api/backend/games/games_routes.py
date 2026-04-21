@@ -14,6 +14,7 @@ def _missing_fields(data, required_fields):
     return [field for field in required_fields if field not in data]
 
 
+# Endpoints for listing and retrieving games. 
 @games_routes.route("/games", methods=["GET"])
 def get_games():
     cursor = get_db().cursor(dictionary=True)
@@ -28,7 +29,7 @@ def get_games():
     finally:
         cursor.close()
 
-
+# Endpoints for creating, updating, and deleting games. Normally requires RBAC but not a part of project.
 @games_routes.route("/games", methods=["POST"])
 def create_game():
     data = _request_data()
@@ -65,6 +66,7 @@ def create_game():
         cursor.close()
 
 
+# Endpoints for updating and deleting games. Normally requires RBAC but not a part of project.
 @games_routes.route("/games/<int:game_id>", methods=["GET"])
 def get_game(game_id):
     cursor = get_db().cursor(dictionary=True)
@@ -83,7 +85,7 @@ def get_game(game_id):
     finally:
         cursor.close()
 
-
+# Endpoints for updating and deleting games. Normally requires RBAC but not a part of project.
 @games_routes.route("/games/<int:game_id>", methods=["PUT"])
 def update_game(game_id):
     data = _request_data()
@@ -128,6 +130,7 @@ def update_game(game_id):
         cursor.close()
 
 
+# Endpoints for updating and deleting games. Normally requires RBAC but not a part of project.
 @games_routes.route("/games/<int:game_id>", methods=["DELETE"])
 def delete_game(game_id):
     db = get_db()

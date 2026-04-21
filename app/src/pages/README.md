@@ -1,14 +1,14 @@
 # `pages` Folder
 
-This folder contains Phase 1 Streamlit pages for GameGoats.
+This folder contains the Streamlit UI for the GameGoats demo experience.
 
-- `00_*`: player-facing setup landing page
-- `10_*`: moderator-facing setup landing page
+- `00_*`: player home and player feature pages
+- `10_*`: developer home and game-management pages
+- `20_*`: admin home plus server, alert, and report tools
+- `30_*`: recommender/community home and curation pages
 - `14_Container_Status.py`: Docker/API/database connectivity checks
-- `15_REST_API_Scope.py`: REST API scope summary
-- `16_Branching_Rules.py`: branching strategy summary
-- `20_*`: admin setup landing page
-- `21_Phase1_Checklist.py`: Phase 1 checklist
-- `30_*`: project about page
+- `30_About.py`: project overview page
+
+There is no separate moderator persona page in the current app.
 
 Page prefixes are intentional because Streamlit orders pages alphabetically.

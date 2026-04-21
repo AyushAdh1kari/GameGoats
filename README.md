@@ -67,7 +67,13 @@ After startup, these containers should be available:
 ### Streamlit App
 
 - URL: `http://localhost:8501`
-- Expected: GameGoats home page plus setup/status pages such as container status, API scope, branching rules, and the Phase 1 checklist
+- Expected: GameGoats home page with mock login selectors for the four active personas:
+  - player
+  - developer
+  - recommender
+  - admin
+- There is no separate moderator home in this version of the app.
+- Supporting setup/status pages such as container status and About are still available.
 
 ### Database
 
@@ -183,3 +189,5 @@ The current schema uses these roles:
 - `recommender`
 - `developer`
 - `admin`
+
+There is no separate `moderator` role or `Moderator Home` page in the current app.
